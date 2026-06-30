@@ -1,0 +1,112 @@
+/* Общий контейнер для списка песен */
+.sounds {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sounds-heading {
+    color: white;
+    font-size: 36px;
+    margin: 0;
+    padding: 36px 0 46px 0;
+}
+
+/* Карточка - трек */
+.track-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+/* При наведении */
+.track-card:hover {
+    background: #2b2b3a;
+    cursor: default;
+}
+
+/* Активный трек */
+.track-card.active {
+    background: #1e1e1e;
+}
+
+/* Название */
+.track-title {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.05em;
+}
+
+.track-title-link{
+    color: white;
+    text-decoration: none;
+}
+
+.track-title-link:hover{
+    text-decoration: underline;
+}
+
+/* Контейнер правая часть: длительность, кнопка лайка*/
+.track-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Длительность */
+.track-duration {
+    font-size: 0.95em;
+    color: #b3b3b3;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* кнопка скрыта */
+.like-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    font-size: 25px;
+    line-height: 1;
+
+    background: none;
+    border: none;
+
+    color: #b3b3b3;
+    cursor: pointer;
+
+    opacity: 0;
+}
+
+/* показываем при наведении на трек */
+.track-card:hover .like-btn {
+    opacity: 1;
+}
+
+/* иконки */
+.like-btn::before {
+    content: "+";
+}
+
+.like-btn.liked::before {
+    content: "✔";
+}
+
+.like-btn:hover {
+    color: #aa9f68;
+    transform: scale(1.05);
+}
+
+.like-btn.liked {
+    color: #aa9f68;
+}

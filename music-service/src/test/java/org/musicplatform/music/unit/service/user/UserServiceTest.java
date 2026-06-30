@@ -1,0 +1,88 @@
+package org.musicplatform.music.unit.service.user;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.musicplatform.music.dto.image.ImageResponse;
+import org.musicplatform.music.entity.image.UserAvatar;
+import org.musicplatform.music.entity.user.Authority;
+import org.musicplatform.music.dto.user.RegistrationRequest;
+import org.musicplatform.music.dto.user.UserMainResponse;
+import org.musicplatform.music.entity.user.User;
+import org.musicplatform.music.exception.user.UserNotFoundException;
+import org.musicplatform.music.mapper.image.ImageMapper;
+import org.musicplatform.music.repository.image.UserAvatarRepository;
+import org.musicplatform.music.repository.user.UserRepository;
+import org.musicplatform.music.service.user.UserService;
+import org.musicplatform.music.support.factory.unit.user.UserDataFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+
+@ExtendWith(MockitoExtension.class)
+public class UserServiceTest {
+
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private UserAvatarRepository userAvatarRepository;
+    @Mock
+    private ImageMapper imageMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private UserService userService;
+
+    @Test
+    void createUser_ReturnValidUser(){
+        RegistrationRequest registrationRequest = UserDataFactory.registrationRequest();
+        String encodingPassword = "encoded";
+
+        when(passwordEncoder.encode(registrationRequest.getPassword())).thenReturn(encodingPassword);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0)); // вернули тот же объект, что был передан в save()
+
+        User result = userService.create(registrationRequest);
+
+        assertEquals(registrationRequest.getUsername(), result.getUsername());
+        assertEquals(encodingPassword, result.getPassword());
+        assertEquals(registrationRequest.getEmail(), result.getEmail());
+        assertEquals(registrationRequest.getDateOfBirth(), result.getDateOfBirth());
+        assertEquals(Authority.USER, result.getRole());
+
+        verify(passwordEncoder).encode(registrationRequest.getPassword());
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void mainResponse_ReturnValidResponse(){
+        User user = UserDataFactory.user();
+        Long userId = user.getId();
+        String username = user.getUsername();
+        UserAvatar userAvatar = UserDataFactory.userAvatar(user);
+        ImageResponse expectedAvatarResponse = UserDataFactory.avatarResponse();
+        when(userRepository.getUsernameById(userId)).thenReturn(Optional.of(username));
+        when(userAvatarRepository.findByUserId(userId)).thenReturn(userAvatar);
+        when(imageMapper.toImageResponse(userAvatar)).thenReturn(expectedAvatarResponse);
+
+        UserMainResponse result = userService.mainResponse(userId);
+        assertEquals(username, result.username());
+        assertEquals(result.avatar().key(), expectedAvatarResponse.key());
+        assertEquals(result.avatar().url(), expectedAvatarResponse.url());
+    }
+
+    @Test
+    void mainResponse_ThrowUserNotFoundException_WhenUsernameIsEmpty(){
+        when(userRepository.getUsernameById(any(Long.class))).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.mainResponse(any(Long.class)));
+    }
+
+}

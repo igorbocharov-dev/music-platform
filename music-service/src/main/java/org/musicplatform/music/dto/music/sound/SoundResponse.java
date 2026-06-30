@@ -1,0 +1,3 @@
+package org.musicplatform.music.dto.music.sound;
+
+public record SoundResponse(Long id, Long albumId, String title, Integer duration, String key, String url) {}

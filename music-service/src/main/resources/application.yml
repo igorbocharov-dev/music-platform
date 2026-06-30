@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: music-service
+  thymeleaf:
+    check-template-location: false
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/MusicService"
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+
+security:
+  login:
+    max-failed-attempts: 3
+    lock-duration: PT15M
+
+yandex:
+  access-key: ${YANDEX_ACCESS_KEY}
+  secret-key: ${YANDEX_SECRET_KEY}
+  buckets:
+    music: ${YANDEX_MUSIC_BUCKET}
+    img: ${YANDEX_IMAGE_BUCKET}
+  region: ${YANDEX_REGION}
+  endpoint: ${YANDEX_ENDPOINT}
+  default-avatar-key: ${YANDEX_DEFAULT_USER_AVATAR_KEY}
+
+jamendo:
+  client-id: ${JAMENDO_CLIENT_ID}
+
+jwt:
+  jwt-secret-key: ${JWT_SECRET}
+  issuer: app-name
+  leeway-seconds: 30
+  access-token-duration: PT15M
+
+refresh-token:
+  duration: P7D
+
+verification-token:
+  expiration-hours: PT24H
+  activation-url: "http://localhost:8080/api/auth/activate?token="
+
+cookie:
+  refresh-token-name: "refreshToken"
+  http-only: true
+  secure: true
+  path: /
+  same-site: Strict
+
+app:
+  metadata-file: ${METADATA_FILE_PATH}

@@ -1,0 +1,82 @@
+/* контейнер */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* кнопка аватара */
+.avatar-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.avatar-btn img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* dropdown */
+.profile-drop-down {
+    position: absolute;
+    right: 0;
+    top: 60px;
+
+    background: #1e1e1e;
+    padding: 10px 0;
+    min-width: 130px;
+
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    z-index: 1100;
+
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+/* открытое состояние */
+.profile-drop-down.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* имя пользователя */
+.profile-name {
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    cursor: default;
+}
+
+/* разделитель (визуальный, без <hr>) */
+.profile-name::after {
+    content: "";
+    display: block;
+    margin-top: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* кнопка выхода */
+.logout-btn {
+    color: #ad0000;
+    background: none;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background .15s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.06);
+}
