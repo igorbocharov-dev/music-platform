@@ -1,0 +1,65 @@
+package org.musicplatform.auth.service.verificationToken;
+
+import org.musicplatform.auth.dto.VerifyEmailRequest;
+import org.musicplatform.auth.entity.User;
+import org.musicplatform.auth.entity.VerificationToken;
+import org.musicplatform.auth.error.VerificationTokenErrorCode;
+import org.musicplatform.auth.exception.VerifyEmailTokenException;
+import org.musicplatform.auth.repository.UserRepository;
+import org.musicplatform.auth.security.properties.VerificationTokenProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Service
+@Transactional(readOnly = true)
+public class VerificationTokenService {
+
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final VerificationTokenProperties properties;
+    private final UserRepository userRepository;
+    private final MailService mailService;
+
+    @Autowired
+    public VerificationTokenService(VerificationTokenRepository verificationTokenRepository, VerificationTokenProperties properties, UserRepository userRepository, MailService mailService) {
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.properties = properties;
+        this.userRepository = userRepository;
+        this.mailService = mailService;
+    }
+
+    public VerificationToken findByToken(String token){
+        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new VerifyEmailTokenException(VerificationTokenErrorCode.MISSING));
+    }
+
+    @Transactional
+    public void createToken(VerifyEmailRequest request){
+        String token = UUID.randomUUID().toString();
+        Instant expiryDate = Instant.now().plus(properties.getExpirationHours());
+        User userProxy = userRepository.getReferenceById(request.userId());
+        verificationTokenRepository.save(new VerificationToken(userProxy, token, expiryDate));
+        String activationLink = properties.getActivationUrl() + token;
+        mailService.sendActivationEmail(request.email(), activationLink);
+    }
+
+    @Transactional
+    public String verify(String token){
+        if(token==null) throw new VerifyEmailTokenException(VerificationTokenErrorCode.MISSING);
+        VerificationToken verificationToken = findByToken(token);
+        if(isExpired(verificationToken)){
+            verificationTokenRepository.delete(verificationToken);
+            throw new VerifyEmailTokenException(VerificationTokenErrorCode.EXPIRED);
+        }
+        Long userId = verificationToken.getUser().getId();
+        userRepository.enableUser(userId);
+        verificationTokenRepository.delete(verificationToken);
+        return "Ваш аккаунт активирован!";
+    }
+
+    private boolean isExpired(VerificationToken verificationToken){
+        return verificationToken.getExpiryDate().isBefore(Instant.now());
+    }
+}

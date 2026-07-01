@@ -1,0 +1,11 @@
+package org.musicplatform.auth.repository;
+
+import org.musicplatform.auth.entity.UserAvatar;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserAvatarRepository extends JpaRepository<UserAvatar, Long> {
+
+    UserAvatar findByUserId(Long userId);
+}

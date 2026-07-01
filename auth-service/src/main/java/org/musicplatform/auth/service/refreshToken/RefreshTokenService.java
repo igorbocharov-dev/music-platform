@@ -1,0 +1,92 @@
+package org.musicplatform.auth.service.refreshToken;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.musicplatform.auth.entity.RefreshToken;
+import org.musicplatform.auth.error.RefreshTokenErrorCode;
+import org.musicplatform.auth.exception.VerifyRefreshTokenException;
+import org.musicplatform.auth.repository.RefreshTokenRepository;
+import org.musicplatform.auth.service.cookie.CookieManager;
+import org.musicplatform.auth.service.cookie.CookieService;
+import org.musicplatform.auth.security.properties.RefreshTokenProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.Optional;
+
+@Service
+@Transactional(readOnly = true)
+public class RefreshTokenService {
+
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenCryptoService refreshTokenCryptoService;
+    private final RefreshTokenProperties refreshTokenProperties;
+    private final CookieService cookieService;
+    private final CookieManager cookieManager;
+
+    @Autowired
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, RefreshTokenCryptoService refreshTokenCryptoService, RefreshTokenProperties refreshTokenProperties,CookieService cookieService, CookieManager cookieManager) {
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenCryptoService = refreshTokenCryptoService;
+        this.refreshTokenProperties = refreshTokenProperties;
+        this.cookieService = cookieService;
+        this.cookieManager = cookieManager;
+    }
+
+    public RefreshToken verifyRequest(HttpServletRequest request) {
+        String refreshTokenValue = cookieService.getRefreshTokenByCookie(request);
+        if(refreshTokenValue==null){
+            throw new VerifyRefreshTokenException(RefreshTokenErrorCode.MISSING);
+        }
+        String hash = refreshTokenCryptoService.hash(refreshTokenValue);
+        return refreshTokenRepository.findByTokenHash(hash).orElseThrow(()-> new VerifyRefreshTokenException(RefreshTokenErrorCode.INVALID));
+    }
+
+    @Transactional
+    public void rotation(RefreshToken refreshToken, HttpServletResponse response){
+        if(isExpired(refreshToken.getExpiryDate())){
+            String newTokenValue = refreshTokenCryptoService.generateRefreshToken();
+            String hash = refreshTokenCryptoService.hash(newTokenValue);
+            refreshTokenRepository.rotation(refreshToken.getUserId(), hash, expiryDate());
+            cookieManager.setCookie(response, newTokenValue);
+        }
+    }
+
+    @Transactional
+    public void dropToken(HttpServletRequest request, HttpServletResponse response){
+        String refreshTokenValue = cookieService.getRefreshTokenByCookie(request);
+        if(refreshTokenValue==null){
+            cookieManager.clearCookie(response);
+            return;
+        }
+        String hash = refreshTokenCryptoService.hash(refreshTokenValue);
+        Optional<RefreshToken> optRefreshToken = refreshTokenRepository.findByTokenHash(hash);
+        optRefreshToken.ifPresent(refreshTokenRepository::delete);
+        cookieManager.clearCookie(response);
+    }
+
+    @Transactional
+    public void deleteByUserId(Long userId, HttpServletResponse response){
+        refreshTokenRepository.deleteByUserId(userId);
+        cookieManager.clearCookie(response);
+    }
+
+    @Transactional
+    public RefreshToken create(Long userId, HttpServletResponse response){
+        String generatedRefreshToken = refreshTokenCryptoService.generateRefreshToken();
+        String hash = refreshTokenCryptoService.hash(generatedRefreshToken);
+        cookieManager.setCookie(response, generatedRefreshToken);
+        return refreshTokenRepository.save(new RefreshToken(hash, expiryDate(), userId));
+    }
+
+    private Instant expiryDate(){
+        return Instant.now().plus(refreshTokenProperties.getDuration());
+    }
+
+    private boolean isExpired(Instant expiryDate){
+        return expiryDate.isBefore(Instant.now());
+    }
+
+}

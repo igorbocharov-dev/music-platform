@@ -1,0 +1,198 @@
+package org.musicplatform.auth.unit.service.auth;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.musicplatform.auth.dto.TokenResponse;
+import org.musicplatform.auth.dto.TokenSubject;
+import org.musicplatform.auth.dto.VerifyEmailRequest;
+import org.musicplatform.auth.dto.user.LoginRequest;
+import org.musicplatform.auth.dto.user.RegistrationRequest;
+import org.musicplatform.auth.entity.RefreshToken;
+import org.musicplatform.auth.entity.User;
+import org.musicplatform.auth.error.UniqueFieldErrorCode;
+import org.musicplatform.auth.exception.RegistrationException;
+import org.musicplatform.auth.security.userDetails.UserDetailsServiceImpl;
+import org.musicplatform.auth.security.userDetails.UserPrincipal;
+import org.musicplatform.auth.service.AuthenticationService;
+import org.musicplatform.auth.service.jwt.JwtTokenService;
+import org.musicplatform.auth.service.refreshToken.RefreshTokenService;
+import org.musicplatform.auth.service.user.UserAvatarService;
+import org.musicplatform.auth.service.user.UserService;
+import org.musicplatform.auth.service.validator.RegistrationValidator;
+import org.musicplatform.auth.service.verificationToken.VerificationTokenService;
+import org.musicplatform.auth.support.factory.unit.auth.JwtTokenFactory;
+import org.musicplatform.auth.support.factory.unit.auth.RefreshTokenFactory;
+import org.musicplatform.auth.support.factory.unit.user.UserDataFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class AuthServiceTest {
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private UserService userService;
+    @Mock
+    private UserAvatarService avatarService;
+    @Mock
+    private RegistrationValidator registrationValidator;
+    @Mock
+    private RefreshTokenService refreshTokenService;
+    @Mock
+    private VerificationTokenService verificationTokenService;
+    @Mock
+    private UserDetailsServiceImpl userDetailsService;
+    @Mock
+    private JwtTokenService jwtTokenService;
+
+    private final MockMultipartFile mockMultipartFile = new MockMultipartFile(
+            "avatar",
+            "avatar.png",
+            "image/png",
+            "fake image bytes".getBytes());
+
+    private final MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+    private final MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
+
+    @InjectMocks
+    private AuthenticationService authService;
+
+    @Test
+    void processRegistration_ShouldCreateUserAndIssueTokensAndSendVerification(){
+        RegistrationRequest registrationRequest = UserDataFactory.registrationRequest();
+        User user = UserDataFactory.user();
+        String jwtValue = JwtTokenFactory.value();
+        when(userService.create(registrationRequest)).thenReturn(user);
+        when(jwtTokenService.generateToken(any(TokenSubject.class))).thenReturn(jwtValue);
+
+        TokenResponse result = authService.processRegistration(registrationRequest, mockMultipartFile, mockHttpServletResponse);
+
+        assertEquals(jwtValue, result.accessToken());
+
+        verify(registrationValidator).validateUsername(registrationRequest.getUsername());
+        verify(registrationValidator).validateEmail(registrationRequest.getEmail());
+        verify(userService).create(registrationRequest);
+        verify(avatarService).create(mockMultipartFile, user);
+
+        ArgumentCaptor<VerifyEmailRequest> verifyEmailRequestCaptor = ArgumentCaptor.forClass(VerifyEmailRequest.class);
+        verify(verificationTokenService).createToken(verifyEmailRequestCaptor.capture());
+        VerifyEmailRequest verifyEmailRequest = verifyEmailRequestCaptor.getValue();
+        assertEquals(user.getId(), verifyEmailRequest.userId());
+        assertEquals(user.getEmail(), verifyEmailRequest.email());
+
+        ArgumentCaptor<TokenSubject> tokenSubjectCaptor = ArgumentCaptor.forClass(TokenSubject.class);
+        verify(jwtTokenService).generateToken(tokenSubjectCaptor.capture());
+        TokenSubject tokenSubject = tokenSubjectCaptor.getValue();
+        assertEquals(user.getId(), tokenSubject.userId());
+        assertTrue(tokenSubject.roles().contains(user.getRole().getAuthority()));
+    }
+
+    @Test
+    void processRegistration_ShouldThrowRegistrationException_UsernameAlreadyExists(){
+        RegistrationRequest registrationRequest = UserDataFactory.registrationRequest();
+        String username = registrationRequest.getUsername();
+
+        doThrow(new RegistrationException("Validation error", UniqueFieldErrorCode.USERNAME)).when(registrationValidator).validateUsername(username);
+
+        assertThrows(RegistrationException.class, ()-> authService.processRegistration(registrationRequest, mockMultipartFile, mockHttpServletResponse));
+
+        verify(registrationValidator).validateUsername(username);
+        verifyNoInteractions(userService, avatarService, verificationTokenService, refreshTokenService, jwtTokenService);
+    }
+
+    @Test
+    void processRegistration_ShouldThrowRegistrationException_EmailAlreadyExists(){
+        RegistrationRequest registrationRequest = UserDataFactory.registrationRequest();
+        String email = registrationRequest.getEmail();
+
+        doThrow(new RegistrationException("Validation error", UniqueFieldErrorCode.EMAIL)).when(registrationValidator).validateEmail(email);
+
+        assertThrows(RegistrationException.class, ()-> authService.processRegistration(registrationRequest, mockMultipartFile, mockHttpServletResponse));
+
+        verify(registrationValidator).validateEmail(email);
+        verifyNoInteractions(userService, avatarService, verificationTokenService, refreshTokenService, jwtTokenService);
+    }
+
+    @Test
+    void processLogin_ShouldGenerateJwtAndRotateRefreshToken(){
+        LoginRequest loginRequest = UserDataFactory.loginRequest();
+        UserPrincipal principal = UserDataFactory.principal();
+        Authentication authentication = UserDataFactory.authentication(principal);
+        Long userId = principal.userId();
+        Collection<String> roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        String jwtValue = JwtTokenFactory.value();
+
+        when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
+        when(jwtTokenService.generateToken(any(TokenSubject.class))).thenReturn(jwtValue);
+
+        TokenResponse result = authService.processLogin(loginRequest, mockHttpServletResponse);
+
+        assertEquals(jwtValue, result.accessToken());
+
+        ArgumentCaptor<UsernamePasswordAuthenticationToken> usernamePasswordAuthenticationTokenCaptor = ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
+        verify(authenticationManager).authenticate(usernamePasswordAuthenticationTokenCaptor.capture());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = usernamePasswordAuthenticationTokenCaptor.getValue();
+        assertEquals(loginRequest.getUsername(), usernamePasswordAuthenticationToken.getPrincipal());
+        assertEquals(loginRequest.getPassword(), usernamePasswordAuthenticationToken.getCredentials());
+
+        InOrder inOrder = inOrder(refreshTokenService);
+        inOrder.verify(refreshTokenService).deleteByUserId(userId, mockHttpServletResponse);
+        inOrder.verify(refreshTokenService).create(userId, mockHttpServletResponse);
+
+        ArgumentCaptor<TokenSubject> tokenSubjectCaptor = ArgumentCaptor.forClass(TokenSubject.class);
+        verify(jwtTokenService).generateToken(tokenSubjectCaptor.capture());
+        TokenSubject tokenSubject = tokenSubjectCaptor.getValue();
+        assertEquals(userId, tokenSubject.userId());
+        assertEquals(roles, tokenSubject.roles());
+
+        verifyNoMoreInteractions(refreshTokenService, jwtTokenService);
+    }
+
+    @Test
+    void refreshAccess_ShouldRotateRefreshTokenAndIssueNewAccessToken(){
+        UserPrincipal principal = UserDataFactory.principal();
+        Long userId = principal.userId();
+        Collection<String> roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        RefreshToken refreshToken = RefreshTokenFactory.validRefreshToken();
+        String jwtValue = JwtTokenFactory.value();
+
+        when(refreshTokenService.verifyRequest(mockHttpServletRequest)).thenReturn(refreshToken);
+        when(userDetailsService.loadPrincipalById(userId)).thenReturn(principal);
+        when(jwtTokenService.generateToken(any(TokenSubject.class))).thenReturn(jwtValue);
+
+        TokenResponse result = authService.refreshAccess(mockHttpServletResponse, mockHttpServletRequest);
+
+        assertEquals(jwtValue, result.accessToken());
+
+        InOrder inOrder = inOrder(refreshTokenService, userDetailsService, jwtTokenService);
+
+        inOrder.verify(refreshTokenService).verifyRequest(mockHttpServletRequest);
+        inOrder.verify(refreshTokenService).rotation(refreshToken, mockHttpServletResponse);
+        inOrder.verify(userDetailsService).loadPrincipalById(userId);
+
+        ArgumentCaptor<TokenSubject> tokenSubjectCaptor = ArgumentCaptor.forClass(TokenSubject.class);
+        inOrder.verify(jwtTokenService).generateToken(tokenSubjectCaptor.capture());
+        TokenSubject tokenSubject = tokenSubjectCaptor.getValue();
+        assertEquals(userId, tokenSubject.userId());
+        assertEquals(roles, tokenSubject.roles());
+
+        verifyNoMoreInteractions(refreshTokenService, userDetailsService, jwtTokenService);
+    }
+
+}
