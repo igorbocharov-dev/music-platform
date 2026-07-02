@@ -1,4 +1,4 @@
-package org.musicplatform.auth.unit.security.refreshToken;
+package org.musicplatform.auth.unit.service.refreshToken;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

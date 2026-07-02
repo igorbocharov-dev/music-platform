@@ -8,7 +8,7 @@ import org.musicplatform.auth.dto.user.LoginRequest;
 import org.musicplatform.auth.dto.user.RegistrationRequest;
 import org.musicplatform.auth.service.refreshToken.RefreshTokenService;
 import org.musicplatform.auth.service.verificationToken.VerificationTokenService;
-import org.musicplatform.auth.service.AuthenticationService;
+import org.musicplatform.auth.service.auth.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

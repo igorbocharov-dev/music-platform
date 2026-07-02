@@ -1,4 +1,4 @@
-package org.musicplatform.auth.integration.repository.user;
+package org.musicplatform.auth.integration.repository;
 
 import org.junit.jupiter.api.Test;
 import org.musicplatform.auth.entity.User;

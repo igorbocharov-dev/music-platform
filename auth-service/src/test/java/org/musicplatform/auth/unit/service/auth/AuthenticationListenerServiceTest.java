@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.musicplatform.auth.entity.User;
 import org.musicplatform.auth.repository.UserRepository;
 import org.musicplatform.auth.security.properties.LoginSecurityProperties;
-import org.musicplatform.auth.service.AuthenticationListenerService;
+import org.musicplatform.auth.service.auth.AuthenticationListenerService;
 import org.musicplatform.auth.support.factory.unit.user.UserDataFactory;
 
 import java.time.Duration;

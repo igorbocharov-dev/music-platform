@@ -1,7 +1,7 @@
 package org.musicplatform.auth.security.config;
 
 import org.musicplatform.auth.entity.Authority;
-import org.musicplatform.auth.security.authHandler.ApiAuthenticationEntryPoint;
+import org.musicplatform.auth.security.authHandler.AuthenticationEntryPointImpl;
 import org.musicplatform.auth.security.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,10 +28,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final ApiAuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, ApiAuthenticationEntryPoint authenticationEntryPoint) {
+    public SecurityConfig(JwtFilter jwtFilter, AuthenticationEntryPointImpl authenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }

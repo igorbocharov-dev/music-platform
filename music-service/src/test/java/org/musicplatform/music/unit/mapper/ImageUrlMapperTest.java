@@ -1,4 +1,4 @@
-package org.musicplatform.music.unit.mapper.image;
+package org.musicplatform.music.unit.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

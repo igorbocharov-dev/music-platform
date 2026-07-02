@@ -1,4 +1,4 @@
-package org.musicplatform.auth.unit.security.verification;
+package org.musicplatform.auth.unit.service.verificationToken;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

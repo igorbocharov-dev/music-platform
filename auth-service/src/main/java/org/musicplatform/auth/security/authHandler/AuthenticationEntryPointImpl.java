@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ApiAuthenticationEntryPoint(ObjectMapper objectMapper) {
+    public AuthenticationEntryPointImpl(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
