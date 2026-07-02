@@ -16,7 +16,7 @@ import org.musicplatform.music.service.uploadData.MusicCatalogService;
 import org.musicplatform.music.service.uploadData.MusicImportService;
 import org.musicplatform.music.service.uploadData.S3KeyGenerator;
 import org.musicplatform.music.service.uploadData.TrackMetadataWriter;
-import org.musicplatform.music.support.factory.unit.music.MusicDataFactory;
+import org.musicplatform.music.support.factory.unit.MusicDataFactory;
 
 import java.util.List;
 

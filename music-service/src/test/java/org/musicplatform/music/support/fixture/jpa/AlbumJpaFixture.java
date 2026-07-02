@@ -3,7 +3,7 @@ package org.musicplatform.music.support.fixture.jpa;
 import org.musicplatform.music.entity.genre.Genre;
 import org.musicplatform.music.entity.music.Album;
 import org.musicplatform.music.entity.music.Artist;
-import org.musicplatform.music.support.factory.it.music.MusicFactoryIT;
+import org.musicplatform.music.support.factory.it.MusicFactoryIT;
 import org.musicplatform.music.support.fixture.integration.AlbumAggregate;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 

@@ -5,11 +5,9 @@ import org.musicplatform.music.entity.genre.Genre;
 import org.musicplatform.music.entity.genre.GenreName;
 import org.musicplatform.music.entity.likes.AlbumLike;
 import org.musicplatform.music.entity.music.Album;
-import org.musicplatform.music.entity.user.User;
 import org.musicplatform.music.repository.likes.AlbumLikeRepository;
 import org.musicplatform.music.repository.music.GenreRepository;
 import org.musicplatform.music.support.config.AbstractJpaIT;
-import org.musicplatform.music.support.factory.it.user.UserDataFactoryIT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
@@ -44,13 +42,13 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndAlbumId_ShouldDeleteRecord(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
         entityManager.flush();
         entityManager.clear();
 
-        repository.deleteByUserIdAndAlbumId(user.getId(), album.getId());
+        repository.deleteByUserIdAndAlbumId(userId, album.getId());
         entityManager.flush();
         entityManager.clear();
 
@@ -61,9 +59,9 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndAlbumId_ShouldDoNothing_WhenUserIdIsIncorrectly(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
 
         entityManager.flush();
         entityManager.clear();
@@ -79,14 +77,14 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndAlbumId_ShouldDoNothing_WhenAlbumIdIsIncorrectly(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
 
         entityManager.flush();
         entityManager.clear();
 
-        repository.deleteByUserIdAndAlbumId(user.getId(), 16352L);
+        repository.deleteByUserIdAndAlbumId(userId, 16352L);
         entityManager.flush();
         entityManager.clear();
 
@@ -97,15 +95,15 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsFirstPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
-        createAlbumLikes(entityManager, user, albums);
+        createAlbumLikes(entityManager, userId, albums);
 
         entityManager.flush();
         entityManager.clear();
 
-        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page, size));
+        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page, size));
         List<AlbumLike> albumLikes = albumLikePage.getContent();
 
         assertAlbumLikeWithAlbum(albumLikes);
@@ -120,15 +118,15 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsSecondPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
-        createAlbumLikes(entityManager, user, albums);
+        createAlbumLikes(entityManager, userId, albums);
 
         entityManager.flush();
         entityManager.clear();
 
-        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page + 1, size));
+        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page + 1, size));
         List<AlbumLike> albumLikes = albumLikePage.getContent();
 
         assertAlbumLikeWithAlbum(albumLikes);
@@ -143,15 +141,15 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsLastPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
-        createAlbumLikes(entityManager, user, albums);
+        createAlbumLikes(entityManager, userId, albums);
 
         entityManager.flush();
         entityManager.clear();
 
-        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page + 2, size));
+        Page<AlbumLike> albumLikePage = repository.findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page + 2, size));
         List<AlbumLike> albumLikes = albumLikePage.getContent();
 
         assertAlbumLikeWithAlbum(albumLikes);
@@ -173,37 +171,37 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnTrue_WhenAlbumLikeIsExists(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
 
         entityManager.flush();
         entityManager.clear();
 
-        Boolean result = repository.existsByUserIdAndAlbumId(user.getId(), album.getId());
+        Boolean result = repository.existsByUserIdAndAlbumId(userId, album.getId());
         assertThat(result).isTrue();
     }
 
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnFalse_WhenAlbumIdIsInvalid(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
 
         entityManager.flush();
         entityManager.clear();
 
-        Boolean result = repository.existsByUserIdAndAlbumId(user.getId(), 8902L);
+        Boolean result = repository.existsByUserIdAndAlbumId(userId, 8902L);
         assertThat(result).isFalse();
     }
 
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnFalse_WhenUserIdIsInvalid(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
-        createAlbumLikes(entityManager, user, List.of(album));
+        createAlbumLikes(entityManager, userId, List.of(album));
 
         entityManager.flush();
         entityManager.clear();

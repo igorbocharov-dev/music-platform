@@ -8,7 +8,7 @@ import org.musicplatform.music.repository.image.AlbumImageRepository;
 import org.musicplatform.music.repository.music.AlbumRepository;
 import org.musicplatform.music.repository.music.ArtistRepository;
 import org.musicplatform.music.repository.music.SoundRepository;
-import org.musicplatform.music.support.factory.it.music.MusicFactoryIT;
+import org.musicplatform.music.support.factory.it.MusicFactoryIT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 

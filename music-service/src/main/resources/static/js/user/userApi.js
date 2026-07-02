@@ -1,7 +1,7 @@
 import {apiFetch} from "../api/httpClient.js";
 
 export async function loadUserProfile(){
-    const response = await apiFetch('/api/user/profile', {
+    const response = await apiFetch('http://localhost:8081/api/user/profile', {
         method: "GET"
     });
     if(response.status === 401) {

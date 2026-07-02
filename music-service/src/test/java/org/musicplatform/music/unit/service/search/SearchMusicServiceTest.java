@@ -13,13 +13,13 @@ import org.musicplatform.music.entity.music.Album;
 import org.musicplatform.music.entity.music.Artist;
 import org.musicplatform.music.entity.music.Sound;
 import org.musicplatform.music.exception.music.NoSuchMusicException;
-import org.musicplatform.music.mapper.music.AlbumMapper;
-import org.musicplatform.music.mapper.music.SoundMapper;
+import org.musicplatform.music.mapper.album.AlbumMapper;
+import org.musicplatform.music.mapper.sound.SoundMapper;
 import org.musicplatform.music.repository.music.AlbumRepository;
 import org.musicplatform.music.repository.music.ArtistRepository;
 import org.musicplatform.music.repository.music.SoundRepository;
 import org.musicplatform.music.service.search.SearchMusicService;
-import org.musicplatform.music.support.factory.unit.music.MusicDataFactory;
+import org.musicplatform.music.support.factory.unit.MusicDataFactory;
 import org.springframework.data.domain.*;
 
 import java.util.List;

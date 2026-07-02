@@ -11,11 +11,11 @@ import org.musicplatform.music.dto.music.sound.SoundsResponse;
 import org.musicplatform.music.entity.likes.SoundLike;
 import org.musicplatform.music.entity.music.Sound;
 import org.musicplatform.music.exception.music.MusicNotFoundException;
-import org.musicplatform.music.mapper.music.SoundMapper;
+import org.musicplatform.music.mapper.sound.SoundMapper;
 import org.musicplatform.music.repository.music.SoundRepository;
 import org.musicplatform.music.service.likes.SoundLikeService;
 import org.musicplatform.music.service.music.SoundService;
-import org.musicplatform.music.support.factory.unit.music.MusicDataFactory;
+import org.musicplatform.music.support.factory.unit.MusicDataFactory;
 import org.springframework.data.domain.*;
 
 import java.util.List;

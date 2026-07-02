@@ -16,7 +16,7 @@ import org.musicplatform.music.repository.music.AlbumRepository;
 import org.musicplatform.music.repository.music.ArtistRepository;
 import org.musicplatform.music.repository.music.SoundRepository;
 import org.musicplatform.music.service.uploadData.MusicCatalogService;
-import org.musicplatform.music.support.factory.unit.music.MusicDataFactory;
+import org.musicplatform.music.support.factory.unit.MusicDataFactory;
 
 import java.util.Optional;
 

@@ -4,7 +4,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.musicplatform.music.error.ApiErrorResponse;
 import org.musicplatform.music.error.ErrorType;
-import org.musicplatform.music.exception.user.RegistrationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,7 +16,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -36,15 +38,6 @@ public class ValidationExceptionHandler {
         return ResponseEntity.status(status).body(
                 new ApiErrorResponse(ErrorType.VALIDATION_ERROR.name(), "Validation failed",
                         status.value(), System.currentTimeMillis(), errors));
-    }
-
-    @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<ApiErrorResponse> handleRegException(RegistrationException e){
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        Map<String, List<String>> fieldsError = new HashMap<>();
-        fieldsError.put(e.getCode().getField(), List.of(e.getCode().getErrorCode()));
-        return ResponseEntity.status(status).body(
-                new ApiErrorResponse(ErrorType.REGISTRATION_ERROR.name(), e.getMessage(), status.value(), System.currentTimeMillis(), fieldsError));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

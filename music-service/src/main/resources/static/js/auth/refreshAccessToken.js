@@ -7,7 +7,7 @@ export async function refreshAccessToken() {
 
     refreshInProgress = (async () => {
         try {
-            const res = await fetch("/api/auth/refresh", {
+            const res = await fetch("http://localhost:8081/api/auth/refresh", {
                 method: "POST",
                 credentials: "include"
             });

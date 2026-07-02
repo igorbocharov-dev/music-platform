@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.musicplatform.music.entity.music.Sound;
-import org.musicplatform.music.entity.user.User;
 
 import java.time.Instant;
 
@@ -20,9 +19,9 @@ public class SoundLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "user_id")
+    private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sound_id")
@@ -34,8 +33,8 @@ public class SoundLike {
 
     public SoundLike(){}
 
-    public SoundLike(User user, Sound sound) {
-        this.user = user;
+    public SoundLike(Long userId, Sound sound) {
+        this.userId = userId;
         this.sound = sound;
     }
 }

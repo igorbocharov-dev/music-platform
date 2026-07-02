@@ -1,19 +1,15 @@
 package org.musicplatform.music.security.config;
 
 import org.musicplatform.music.entity.user.Authority;
-import org.musicplatform.music.security.authHandler.ApiAuthenticationEntryPoint;
+import org.musicplatform.music.security.entryPoint.AuthenticationEntryPointImpl;
 import org.musicplatform.music.security.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -22,10 +18,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final ApiAuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, ApiAuthenticationEntryPoint authenticationEntryPoint) {
+    public SecurityConfig(JwtFilter jwtFilter, AuthenticationEntryPointImpl authenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
@@ -47,16 +43,6 @@ public class SecurityConfig {
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
     }
 
 }

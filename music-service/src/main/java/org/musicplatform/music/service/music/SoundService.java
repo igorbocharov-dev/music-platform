@@ -7,7 +7,7 @@ import org.musicplatform.music.dto.music.sound.SoundsResponse;
 import org.musicplatform.music.entity.likes.SoundLike;
 import org.musicplatform.music.entity.music.Sound;
 import org.musicplatform.music.exception.music.MusicNotFoundException;
-import org.musicplatform.music.mapper.music.SoundMapper;
+import org.musicplatform.music.mapper.sound.SoundMapper;
 import org.musicplatform.music.repository.music.SoundRepository;
 import org.musicplatform.music.service.likes.SoundLikeService;
 import org.springframework.beans.factory.annotation.Autowired;

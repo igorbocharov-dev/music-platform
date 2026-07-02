@@ -5,7 +5,6 @@ import org.musicplatform.music.dto.likes.LikeStatusResponse;
 import org.musicplatform.music.dto.likes.LikedContentIds;
 import org.musicplatform.music.entity.likes.SoundLike;
 import org.musicplatform.music.entity.music.Sound;
-import org.musicplatform.music.entity.user.User;
 import org.musicplatform.music.exception.music.NoSuchMusicException;
 import org.musicplatform.music.repository.likes.SoundLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,8 @@ public class SoundLikeService {
 
     @Transactional
     public void create(Long userId, Long soundId){
-        User user = entityManager.getReference(User.class, userId);
         Sound sound = entityManager.getReference(Sound.class, soundId);
-        SoundLike soundLike = new SoundLike(user, sound);
+        SoundLike soundLike = new SoundLike(userId, sound);
         soundLikeRepository.save(soundLike);
     }
 

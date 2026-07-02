@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import org.musicplatform.music.dto.likes.LikeStatusResponse;
 import org.musicplatform.music.entity.likes.AlbumLike;
 import org.musicplatform.music.entity.music.Album;
-import org.musicplatform.music.entity.user.User;
 import org.musicplatform.music.exception.music.NoSuchMusicException;
 import org.musicplatform.music.repository.likes.AlbumLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,8 @@ public class AlbumLikeService {
 
     @Transactional
     public void create(Long userId, Long albumId){
-        User user = entityManager.getReference(User.class, userId);
         Album album = entityManager.getReference(Album.class, albumId);
-        AlbumLike albumLike = new AlbumLike(user, album);
+        AlbumLike albumLike = new AlbumLike(userId, album);
         albumLikeRepository.save(albumLike);
     }
 

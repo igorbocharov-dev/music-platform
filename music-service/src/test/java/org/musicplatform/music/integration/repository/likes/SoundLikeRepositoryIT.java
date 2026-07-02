@@ -5,11 +5,9 @@ import org.musicplatform.music.entity.genre.Genre;
 import org.musicplatform.music.entity.genre.GenreName;
 import org.musicplatform.music.entity.likes.SoundLike;
 import org.musicplatform.music.entity.music.Sound;
-import org.musicplatform.music.entity.user.User;
 import org.musicplatform.music.repository.likes.SoundLikeRepository;
 import org.musicplatform.music.repository.music.GenreRepository;
 import org.musicplatform.music.support.config.AbstractJpaIT;
-import org.musicplatform.music.support.factory.it.user.UserDataFactoryIT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
@@ -44,14 +42,14 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndSoundId_ShouldDeleteRecord() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
 
-        repository.deleteByUserIdAndSoundId(user.getId(), sound.getId());
+        repository.deleteByUserIdAndSoundId(userId, sound.getId());
         entityManager.flush();
         entityManager.clear();
 
@@ -62,9 +60,9 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndSoundId_ShouldDoNothing_WhenUserIdIsIncorrectly() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
@@ -80,14 +78,14 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndSoundId_ShouldDoNothing_WhenSoundIdIsIncorrectly() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
 
-        repository.deleteByUserIdAndSoundId(user.getId(), 6512L);
+        repository.deleteByUserIdAndSoundId(userId, 6512L);
         entityManager.flush();
         entityManager.clear();
 
@@ -98,17 +96,17 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsFirstPageCorrectly() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String soundTitlePrefix = "bad romance";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager,soundTitlePrefix, endKeyName).sounds();
-        createSoundLikes(entityManager, user, sounds);
+        createSoundLikes(entityManager, userId, sounds);
 
         entityManager.flush();
         entityManager.clear();
 
         Page<SoundLike> soundLikePage = repository
-                .findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page, size));
+                .findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page, size));
         List<SoundLike> soundLikes = soundLikePage.getContent();
 
         assertSoundLikesWithSounds(soundLikes);
@@ -125,17 +123,17 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsSecondPageCorrectly() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String soundTitlePrefix = "starlight";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager, soundTitlePrefix, endKeyName).sounds();
-        createSoundLikes(entityManager, user, sounds);
+        createSoundLikes(entityManager, userId, sounds);
 
         entityManager.flush();
         entityManager.clear();
 
         Page<SoundLike> soundLikePage = repository
-                .findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page + 1, size));
+                .findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page + 1, size));
         List<SoundLike> soundLikes = soundLikePage.getContent();
 
         assertSoundLikesWithSounds(soundLikes);
@@ -150,17 +148,17 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsLastPageCorrectly() {
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         String soundTitlePrefix = "poker face";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager, soundTitlePrefix, endKeyName).sounds();
-        createSoundLikes(entityManager, user, sounds);
+        createSoundLikes(entityManager, userId, sounds);
 
         entityManager.flush();
         entityManager.clear();
 
         Page<SoundLike> soundLikePage = repository
-                .findByUserIdOrderByCreatedAtDescIdDesc(user.getId(), PageRequest.of(page + 2, size));
+                .findByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(page + 2, size));
         List<SoundLike> soundLikes = soundLikePage.getContent();
 
         assertSoundLikesWithSounds(soundLikes);
@@ -182,37 +180,37 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndSoundId_ShouldReturnIsTrue_WhenSoundLikeIsExists(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
 
-        Boolean result = repository.existsByUserIdAndSoundId(user.getId(), sound.getId());
+        Boolean result = repository.existsByUserIdAndSoundId(userId, sound.getId());
         assertThat(result).isTrue();
     }
 
     @Test
     void existsByUserIdAndSoundId_ShouldReturnFalse_WhenAlbumIdIsInvalid(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
 
-        Boolean result = repository.existsByUserIdAndSoundId(user.getId(), 8902L);
+        Boolean result = repository.existsByUserIdAndSoundId(userId, 8902L);
         assertThat(result).isFalse();
     }
 
     @Test
     void existsByUserIdAndSoundId_ShouldReturnFalse_WhenUserIdIsInvalid(){
         Genre genre = findGenre();
-        User user = entityManager.persist(UserDataFactoryIT.user());
+        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
-        createSoundLikes(entityManager, user, List.of(sound));
+        createSoundLikes(entityManager, userId, List.of(sound));
 
         entityManager.flush();
         entityManager.clear();
