@@ -1,4 +1,4 @@
-package org.musicplatform.auth.service;
+package org.musicplatform.auth.service.auth;
 
 import org.musicplatform.auth.entity.User;
 import org.musicplatform.auth.repository.UserRepository;

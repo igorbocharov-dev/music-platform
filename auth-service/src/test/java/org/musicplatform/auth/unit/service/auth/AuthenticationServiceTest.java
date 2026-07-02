@@ -18,7 +18,7 @@ import org.musicplatform.auth.error.UniqueFieldErrorCode;
 import org.musicplatform.auth.exception.RegistrationException;
 import org.musicplatform.auth.security.userDetails.UserDetailsServiceImpl;
 import org.musicplatform.auth.security.userDetails.UserPrincipal;
-import org.musicplatform.auth.service.AuthenticationService;
+import org.musicplatform.auth.service.auth.AuthenticationService;
 import org.musicplatform.auth.service.jwt.JwtTokenService;
 import org.musicplatform.auth.service.refreshToken.RefreshTokenService;
 import org.musicplatform.auth.service.user.UserAvatarService;
@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+public class AuthenticationServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;

@@ -1,4 +1,4 @@
-package org.musicplatform.auth.service;
+package org.musicplatform.auth.service.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

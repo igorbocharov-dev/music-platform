@@ -1,6 +1,6 @@
 package org.musicplatform.auth.security.authListener;
 
-import org.musicplatform.auth.service.AuthenticationListenerService;
+import org.musicplatform.auth.service.auth.AuthenticationListenerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;

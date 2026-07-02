@@ -1,4 +1,4 @@
-package org.musicplatform.auth.unit.security.jwt;
+package org.musicplatform.auth.unit.service.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
