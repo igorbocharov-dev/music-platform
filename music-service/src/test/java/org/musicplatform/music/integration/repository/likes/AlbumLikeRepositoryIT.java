@@ -39,10 +39,11 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
         return genreRepository.findByName(GenreName.ROCK).orElseThrow();
     }
 
+    private static final long userId = 1L;
+
     @Test
     void deleteByUserIdAndAlbumId_ShouldDeleteRecord(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
         entityManager.flush();
@@ -59,7 +60,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndAlbumId_ShouldDoNothing_WhenUserIdIsIncorrectly(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
 
@@ -77,7 +77,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndAlbumId_ShouldDoNothing_WhenAlbumIdIsIncorrectly(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
 
@@ -95,7 +94,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsFirstPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
         createAlbumLikes(entityManager, userId, albums);
@@ -118,7 +116,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsSecondPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
         createAlbumLikes(entityManager, userId, albums);
@@ -141,7 +138,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDesc_ShouldReturnsLastPageCorrectlyWithOrderByCreatedAtDescIdDesc(){
         Genre genre = findGenre();
-        Long userId = 1L;
         String titleAlbumPrefix = "bad romance";
         List<Album> albums = albumAggregateWithAlbums(genre, entityManager, titleAlbumPrefix).albums();
         createAlbumLikes(entityManager, userId, albums);
@@ -171,7 +167,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnTrue_WhenAlbumLikeIsExists(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
 
@@ -185,7 +180,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnFalse_WhenAlbumIdIsInvalid(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
 
@@ -199,7 +193,6 @@ public class AlbumLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndAlbumId_ShouldReturnFalse_WhenUserIdIsInvalid(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Album album = albumAggregateWithOneAlbum(genre, entityManager).albums().getFirst();
         createAlbumLikes(entityManager, userId, List.of(album));
 

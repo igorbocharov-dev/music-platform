@@ -13,6 +13,7 @@ import org.musicplatform.music.repository.likes.AlbumLikeRepository;
 import org.musicplatform.music.repository.music.GenreRepository;
 import org.musicplatform.music.support.config.AbstractSpringBootIT;
 import org.musicplatform.music.support.factory.it.MusicFactoryIT;
+import org.musicplatform.music.support.factory.it.security.WithMockUserPrincipal;
 import org.musicplatform.music.support.fixture.integration.AlbumTestFixture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -43,6 +44,8 @@ public class AlbumLikeControllerIT extends AbstractSpringBootIT {
 
     private Genre genre;
 
+    private static final long userId = 1L;
+
     @BeforeEach
     void setup(){
         truncateTables();
@@ -58,60 +61,60 @@ public class AlbumLikeControllerIT extends AbstractSpringBootIT {
                 " sound, sound_like, album_like RESTART IDENTITY CASCADE");
     }
 
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldReturnsLikeStatusIsTrue_WhenAlbumLikeExists() throws Exception {
-//        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
-//        albumLikeRepository.save(MusicFactoryIT.albumLike(user, album));
-//
-//        MvcResult result = mockMvc.perform(get("/api/private/album-like/is-liked/{id}", album.getId()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.likeStatus").exists())
-//                .andReturn();
-//
-//        String resultJson = result.getResponse().getContentAsString();
-//        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
-//        assertThat(likeStatusResponse.likeStatus()).isTrue();
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldReturnsLikeStatusIsFalse_WhenAlbumLikeIsNotExists() throws Exception {
-//        MvcResult result = mockMvc.perform(get("/api/private/album-like/is-liked/{id}", 256L))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.likeStatus").exists())
-//                .andReturn();
-//
-//        String resultJson = result.getResponse().getContentAsString();
-//        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
-//        assertThat(likeStatusResponse.likeStatus()).isFalse();
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldCreateAlbumLike() throws Exception{
-//        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
-//
-//        mockMvc.perform(post("/api/private/album-like/{id}", album.getId()))
-//                .andExpect(status().isCreated());
-//
-//        assertThat(albumLikeRepository.count()).isEqualTo(1);
-//
-//        AlbumLike albumLike = albumLikeRepository.findAll().getFirst();
-//        assertThat(albumLike.getAlbum().getId()).isEqualTo(album.getId());
-//        assertThat(albumLike.getUser().getId()).isEqualTo(user.getId());
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldSuccessDeleteAlbumLike() throws Exception{
-//        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
-//        AlbumLike albumLike = albumLikeRepository.save(MusicFactoryIT.albumLike(user, album));
-//
-//        mockMvc.perform(delete("/api/private/album-like/{id}", album.getId()))
-//                .andExpect(status().isNoContent());
-//
-//        assertThat(albumLikeRepository.findById(albumLike.getId())).isEmpty();
-//    }
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldReturnsLikeStatusIsTrue_WhenAlbumLikeExists() throws Exception {
+        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
+        albumLikeRepository.save(MusicFactoryIT.albumLike(userId, album));
+
+        MvcResult result = mockMvc.perform(get("/api/private/album-like/is-liked/{id}", album.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likeStatus").exists())
+                .andReturn();
+
+        String resultJson = result.getResponse().getContentAsString();
+        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
+        assertThat(likeStatusResponse.likeStatus()).isTrue();
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldReturnsLikeStatusIsFalse_WhenAlbumLikeIsNotExists() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/private/album-like/is-liked/{id}", 256L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likeStatus").exists())
+                .andReturn();
+
+        String resultJson = result.getResponse().getContentAsString();
+        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
+        assertThat(likeStatusResponse.likeStatus()).isFalse();
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldCreateAlbumLike() throws Exception{
+        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
+
+        mockMvc.perform(post("/api/private/album-like/{id}", album.getId()))
+                .andExpect(status().isCreated());
+
+        assertThat(albumLikeRepository.count()).isEqualTo(1);
+
+        AlbumLike albumLike = albumLikeRepository.findAll().getFirst();
+        assertThat(albumLike.getAlbum().getId()).isEqualTo(album.getId());
+        assertThat(albumLike.getUserId()).isEqualTo(userId);
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldSuccessDeleteAlbumLike() throws Exception{
+        Album album = albumFixture.albumAggregateWithOneAlbum(genre).albums().getFirst();
+        AlbumLike albumLike = albumLikeRepository.save(MusicFactoryIT.albumLike(userId, album));
+
+        mockMvc.perform(delete("/api/private/album-like/{id}", album.getId()))
+                .andExpect(status().isNoContent());
+
+        assertThat(albumLikeRepository.findById(albumLike.getId())).isEmpty();
+    }
 
 }

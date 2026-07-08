@@ -39,10 +39,11 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
         return genreRepository.findByName(GenreName.ROCK).orElseThrow();
     }
 
+    private static final long userId = 1L;
+
     @Test
     void deleteByUserIdAndSoundId_ShouldDeleteRecord() {
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 
@@ -60,7 +61,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndSoundId_ShouldDoNothing_WhenUserIdIsIncorrectly() {
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 
@@ -78,7 +78,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void deleteByUserIdAndSoundId_ShouldDoNothing_WhenSoundIdIsIncorrectly() {
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 
@@ -96,7 +95,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsFirstPageCorrectly() {
         Genre genre = findGenre();
-        Long userId = 1L;
         String soundTitlePrefix = "bad romance";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager,soundTitlePrefix, endKeyName).sounds();
@@ -123,7 +121,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsSecondPageCorrectly() {
         Genre genre = findGenre();
-        Long userId = 1L;
         String soundTitlePrefix = "starlight";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager, soundTitlePrefix, endKeyName).sounds();
@@ -148,7 +145,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void findByUserIdOrderByCreatedAtDescIdDesc_ShouldReturnsLastPageCorrectly() {
         Genre genre = findGenre();
-        Long userId = 1L;
         String soundTitlePrefix = "poker face";
         String endKeyName = "key";
         List<Sound> sounds = soundAggregateWithSounds(genre, entityManager, soundTitlePrefix, endKeyName).sounds();
@@ -180,7 +176,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndSoundId_ShouldReturnIsTrue_WhenSoundLikeIsExists(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 
@@ -194,7 +189,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndSoundId_ShouldReturnFalse_WhenAlbumIdIsInvalid(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 
@@ -208,7 +202,6 @@ public class SoundLikeRepositoryIT extends AbstractJpaIT {
     @Test
     void existsByUserIdAndSoundId_ShouldReturnFalse_WhenUserIdIsInvalid(){
         Genre genre = findGenre();
-        Long userId = 1L;
         Sound sound = soundAggregateWithOneSound(genre, entityManager).sounds().getFirst();
         createSoundLikes(entityManager, userId, List.of(sound));
 

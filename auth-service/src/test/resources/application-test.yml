@@ -3,7 +3,6 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-
     hikari:
       maximum-pool-size: 5
       minimum-idle: 1

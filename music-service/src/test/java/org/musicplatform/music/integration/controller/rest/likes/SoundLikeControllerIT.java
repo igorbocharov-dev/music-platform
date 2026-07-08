@@ -13,6 +13,7 @@ import org.musicplatform.music.repository.likes.SoundLikeRepository;
 import org.musicplatform.music.repository.music.GenreRepository;
 import org.musicplatform.music.support.config.AbstractSpringBootIT;
 import org.musicplatform.music.support.factory.it.MusicFactoryIT;
+import org.musicplatform.music.support.factory.it.security.WithMockUserPrincipal;
 import org.musicplatform.music.support.fixture.integration.SoundTestFixture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -43,6 +44,8 @@ public class SoundLikeControllerIT extends AbstractSpringBootIT {
 
     private Genre genre;
 
+    private static final long userId = 1L;
+
     @BeforeEach
     void setup(){
         truncateTables();
@@ -58,59 +61,59 @@ public class SoundLikeControllerIT extends AbstractSpringBootIT {
                 " sound, sound_like, album_like RESTART IDENTITY CASCADE");
     }
 
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldReturnsLikeStatusIsTrueAndHttpStatusIsOk_WhenSoundLikeExists() throws Exception{
-//        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
-//        soundLikeRepository.save(MusicFactoryIT.soundLike(user, sound));
-//
-//        MvcResult result = mockMvc.perform(get("/api/private/sound-like/is-liked/{id}", sound.getId()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.likeStatus").exists())
-//                .andReturn();
-//
-//        String resultJson = result.getResponse().getContentAsString();
-//        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
-//        assertThat(likeStatusResponse.likeStatus()).isTrue();
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldReturnsLikeStatusIsFalseAndHttpStatusIsOk_WhenSoundLikeIsNotExists() throws Exception{
-//        MvcResult result = mockMvc.perform(get("/api/private/sound-like/is-liked/{id}", 256L))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.likeStatus").exists())
-//                .andReturn();
-//
-//        String resultJson = result.getResponse().getContentAsString();
-//        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
-//        assertThat(likeStatusResponse.likeStatus()).isFalse();
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldCreateSoundLikeAndReturnStatusIsCreated() throws Exception{
-//        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
-//
-//        mockMvc.perform(post("/api/private/sound-like/{id}", sound.getId()))
-//                .andExpect(status().isCreated());
-//
-//        assertThat(soundLikeRepository.count()).isEqualTo(1);
-//
-//        SoundLike soundLike = soundLikeRepository.findAll().getFirst();
-//        assertThat(soundLike.getSound().getId()).isEqualTo(sound.getId());
-//        assertThat(soundLike.getUser().getId()).isEqualTo(user.getId());
-//    }
-//
-//    @Test
-//    @WithMockUserPrincipal
-//    void shouldDeleteSoundLikeAndReturnStatusIsNoContent() throws Exception{
-//        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
-//        SoundLike soundLike = soundLikeRepository.save(MusicFactoryIT.soundLike(user, sound));
-//
-//        mockMvc.perform(delete("/api/private/sound-like/{id}", sound.getId()))
-//                .andExpect(status().isNoContent());
-//
-//        assertThat(soundLikeRepository.findById(soundLike.getId())).isEmpty();
-//    }
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldReturnsLikeStatusIsTrueAndHttpStatusIsOk_WhenSoundLikeExists() throws Exception{
+        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
+        soundLikeRepository.save(MusicFactoryIT.soundLike(userId, sound));
+
+        MvcResult result = mockMvc.perform(get("/api/private/sound-like/is-liked/{id}", sound.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likeStatus").exists())
+                .andReturn();
+
+        String resultJson = result.getResponse().getContentAsString();
+        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
+        assertThat(likeStatusResponse.likeStatus()).isTrue();
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldReturnsLikeStatusIsFalseAndHttpStatusIsOk_WhenSoundLikeIsNotExists() throws Exception{
+        MvcResult result = mockMvc.perform(get("/api/private/sound-like/is-liked/{id}", 256L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.likeStatus").exists())
+                .andReturn();
+
+        String resultJson = result.getResponse().getContentAsString();
+        LikeStatusResponse likeStatusResponse = objectMapper.readValue(resultJson, LikeStatusResponse.class);
+        assertThat(likeStatusResponse.likeStatus()).isFalse();
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldCreateSoundLikeAndReturnStatusIsCreated() throws Exception{
+        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
+
+        mockMvc.perform(post("/api/private/sound-like/{id}", sound.getId()))
+                .andExpect(status().isCreated());
+
+        assertThat(soundLikeRepository.count()).isEqualTo(1);
+
+        SoundLike soundLike = soundLikeRepository.findAll().getFirst();
+        assertThat(soundLike.getSound().getId()).isEqualTo(sound.getId());
+        assertThat(soundLike.getUserId()).isEqualTo(userId);
+    }
+
+    @Test
+    @WithMockUserPrincipal(userId = userId)
+    void shouldDeleteSoundLikeAndReturnStatusIsNoContent() throws Exception{
+        Sound sound = soundFixture.soundAggregateWithOneSound(genre).sounds().getFirst();
+        SoundLike soundLike = soundLikeRepository.save(MusicFactoryIT.soundLike(userId, sound));
+
+        mockMvc.perform(delete("/api/private/sound-like/{id}", sound.getId()))
+                .andExpect(status().isNoContent());
+
+        assertThat(soundLikeRepository.findById(soundLike.getId())).isEmpty();
+    }
 }
