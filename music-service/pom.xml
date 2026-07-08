@@ -14,11 +14,6 @@
 
     <name>music-service</name>
 
-    <properties>
-        <java.version>21</java.version>
-        <awssdk.version>2.41.32</awssdk.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -36,21 +31,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
@@ -64,8 +44,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- Source: https://mvnrepository.com/artifact/de.huxhorn.sulky/de.huxhorn.sulky.ulid
-         ULID generation key -->
         <dependency>
             <groupId>de.huxhorn.sulky</groupId>
             <artifactId>de.huxhorn.sulky.ulid</artifactId>
@@ -109,15 +87,17 @@
             <version>1.21.3</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -152,8 +132,8 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>org/musicservice/demo/security/config/**</exclude>
-                                <exclude>org/musicservice/demo/integration/**</exclude>
+                                <exclude>org/musicplatform/music/security/config/**</exclude>
+                                <exclude>org/musicplatform/music/integration/**</exclude>
                                 <exclude>**/*MapperImpl*</exclude>
                             </excludes>
                         </configuration>
