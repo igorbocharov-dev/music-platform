@@ -1,0 +1,28 @@
+services:
+  music-service:
+    image: music-platform/music-service:1.0
+    build:
+      context: .
+      dockerfile: music-service/Dockerfile
+
+    container_name: music-service
+
+    ports:
+      - "8080:8080"
+
+    env_file:
+      - ./music-service/.env
+
+  auth-service:
+    image: music-platform/auth-service:1.0
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+
+    container_name: auth-service
+
+    ports:
+      - "8081:8080"
+
+    env_file:
+      - ./auth-service/.env
