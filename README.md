@@ -13,22 +13,22 @@ and artists by genre and interact with them through likes and personalized music
 ### Album collection
 Adding a new album to the collection
 
-![album-collection-demo](MusicService/docs/gif/demo-album-collection-gif.gif)
+![album-collection-demo](docs/gif/demo-album-collection-gif.gif)
 
 ### Track collection
 Adding a new track to the collection 
 
-![track-collection-demo](MusicService/docs/gif/demo-track-collection-gif.gif)
+![track-collection-demo](docs/gif/demo-track-collection-gif.gif)
 
 ### Search
 Content search with paginated results
 
-![search-demo](MusicService/docs/gif/demo-search-gif.gif)
+![search-demo](docs/gif/demo-search-gif.gif)
 
 ### Authentication flow
 Unauthorized users are redirected to the login page when accessing protected collections.
 
-![authentication-flow-demo](MusicService/docs/gif/demo-user-logout-login-gif.gif)
+![authentication-flow-demo](docs/gif/demo-user-logout-login-gif.gif)
 
 ---
 
@@ -52,7 +52,7 @@ Unauthorized users are redirected to the login page when accessing protected col
 
 ### Genre page
 
-<img src="MusicService/docs/screen/genre-page.png">
+<img src="docs/screen/genre-page.png">
 
 
 ### Login page
